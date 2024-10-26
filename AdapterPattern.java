@@ -46,7 +46,7 @@ class DomesticAdaptWild implements WildCat{
     @Override
     public void roar() {
         kitty.meow();
-        System.out.println("that is the loadest I can do");
+        System.out.println("that is the loudest I can do");
     }
 
     @Override
