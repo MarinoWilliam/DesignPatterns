@@ -116,7 +116,6 @@ class SafetyManager {
 
     public void alarmFired(int index) {
         commands[index].excute();
-
         retreates.push(commands[index]);
     }
 
