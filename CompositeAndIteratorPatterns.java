@@ -24,22 +24,27 @@ abstract class LibraryComponent {
     public double getPrice() {
         throw new UnsupportedOperationException();
     }
-    
+
     public String getAuthor() {
-        return "";
+        return null;
     }
 
     public boolean isAudble() {
         throw new UnsupportedOperationException();
     }
 
-    public void print(){
+    public void print() {
         throw new UnsupportedOperationException();
     }
 
     public Iterator<LibraryComponent> createIterator() {
         throw new UnsupportedOperationException();
     }
+
+    public void distroy() {
+    }
+
+
 }
 
 class Genre extends LibraryComponent {
@@ -77,13 +82,23 @@ class Genre extends LibraryComponent {
         return false;
     }
 
-    public void print(){
-       System.out.println("\n "+ getTitle() + "   " +"a department for "+ getDescription());
-       System.out.println(" ......................... \n");
-       Iterator<LibraryComponent> tempIterator = books.iterator();
-       while (tempIterator.hasNext()) {
-           tempIterator.next().print();
-       }
+    
+
+    public void print() {
+        System.out.println("\n " + getTitle() + "   " + "a department for " + getDescription());
+        System.out.println(" ......................... \n");
+        Iterator<LibraryComponent> tempIterator = books.iterator();
+        while (tempIterator.hasNext()) {
+            tempIterator.next().print();
+        }
+
+    }
+    public void distroy() {
+        iterator = null;
+        Iterator<LibraryComponent> tempIterator = books.iterator();
+        while (tempIterator.hasNext()) {
+            tempIterator.next().distroy();
+        }
 
     }
 
@@ -93,6 +108,8 @@ class Genre extends LibraryComponent {
         }
         return iterator;
     }
+
+
 }
 
 class Book extends LibraryComponent {
@@ -103,12 +120,12 @@ class Book extends LibraryComponent {
     boolean audable;
     Iterator<LibraryComponent> iterator;
 
-    public Book(String title, String description, double price, boolean audable,  String author) {
+    public Book(String title, String description, double price, boolean audable, String author) {
         this.title = title;
         this.description = description;
         this.price = price;
         this.audable = audable;
-        this.author= author;
+        this.author = author;
     }
 
     public String getTitle() {
@@ -131,9 +148,9 @@ class Book extends LibraryComponent {
         return author;
     }
 
-    public void print(){
-       System.out.println(getTitle() + "   " + getPrice());
-       System.out.println( getDescription());
+    public void print() {
+        System.out.println(getTitle() + "   " + getPrice());
+        System.out.println(getDescription());
     }
 
     public Iterator<LibraryComponent> createIterator() {
@@ -142,20 +159,22 @@ class Book extends LibraryComponent {
         }
         return iterator;
     }
+
 }
 
 class LibraryComponentIterator implements Iterator<LibraryComponent> {
     Stack<Iterator<LibraryComponent>> stack = new Stack<>();
 
-    public LibraryComponentIterator(Iterator<LibraryComponent> iterator){
+    public LibraryComponentIterator(Iterator<LibraryComponent> iterator) {
         stack.push(iterator);
     }
 
     @Override
     public LibraryComponent next() {
         if (hasNext()) {
-            Iterator<LibraryComponent> iterator =  stack.peek();
+            Iterator<LibraryComponent> iterator = stack.peek();
             LibraryComponent libraryComponent = (LibraryComponent) iterator.next();
+            
             if (libraryComponent instanceof Genre) {
                 stack.push((LibraryComponentIterator) libraryComponent.createIterator());
             }
@@ -206,40 +225,41 @@ class NullIterator implements Iterator {
 
 }
 
-
 class Librarian {
     LibraryComponent allOfTheLibrary;
 
-    public Librarian(LibraryComponent allOfTheLibrary){
+    public Librarian(LibraryComponent allOfTheLibrary) {
         this.allOfTheLibrary = allOfTheLibrary;
     }
 
-    public void printAllBooks(){
+    public void printAllBooks() {
         allOfTheLibrary.print();
     }
 
-    public void printAudable(){
-        Iterator iterator = allOfTheLibrary.createIterator();
+    public void printAudable() {
+        Iterator<LibraryComponent> iterator = allOfTheLibrary.createIterator();
         while (iterator.hasNext()) {
             LibraryComponent tempLibraryComponent = (LibraryComponent) iterator.next();
             if (tempLibraryComponent.isAudble()) {
                 System.out.println(tempLibraryComponent.getTitle());
             }
         }
+        allOfTheLibrary.distroy();
     }
-    
-    public void printBooksOfAuthor(String author){
+
+    public void printBooksOfAuthor(String author) {
         Iterator<LibraryComponent> iterator = allOfTheLibrary.createIterator();
         while (iterator.hasNext()) {
             LibraryComponent tempLibraryComponent = (LibraryComponent) iterator.next();
-            if (tempLibraryComponent.getAuthor() == author ) {
+            if (tempLibraryComponent.getAuthor() != null && tempLibraryComponent.getAuthor().equalsIgnoreCase(author)) {
                 System.out.println(tempLibraryComponent.getTitle());
             }
         }
+        allOfTheLibrary.distroy();
+
     }
 
     
-
 }
 
 public class CompositeAndIteratorPatterns {
@@ -251,34 +271,45 @@ public class CompositeAndIteratorPatterns {
         LibraryComponent romantic = new Genre("Romantic", "Romantic stories");
         LibraryComponent comics = new Genre("Comics", "Illustrated stories");
 
-        drama.add(new Book("Hamlet", "A tragedy by William Shakespeare", 10.99, false, "William Shakespeare"));
-        fantasy.add(new Book("A Wizard of Earthsea", "A classic fantasy novel by Ursula K. Le Guin", 14.99, false, "Ursula K. Le Guin"));
-        fantasy.add(new Book("The Hobbit", "A fantasy novel by J.R.R. Tolkien", 12.99, false, "J.R.R. Tolkien"));
+        drama.add(new Book("Hamlet", "A tragedy by William Shakespeare", 10.99, true, "William Shakespeare"));
+        fantasy.add(new Book("A Wizard of Earthsea", "A classic fantasy novel by Ursula K. Le Guin", 14.99, true,
+                "Ursula K. Le Guin"));
+        fantasy.add(new Book("The Hobbit", "A fantasy novel by J.R.R. Tolkien", 12.99, true, "J.R.R. Tolkien"));
         romantic.add(new Book("Pride and Prejudice", "A romantic novel by Jane Austen", 8.99, false, "Jane Austen"));
 
         novels.add(drama);
         novels.add(fantasy);
         novels.add(romantic);
 
-        comics.add(new Book("Spider-Man", "A comic book about Spider-Man", 4.99, false, "Stan Lee"));
-        comics.add(new Book("Batman", "A comic book about Batman", 5.99, false, "Bob Kane"));
+        comics.add(new Book("Spider-Man", "A comic book about Spider-Man", 4.99, true, "Stan Lee"));
+        comics.add(new Book("Batman", "A comic book about Batman", 5.99, true, "Bob Kane"));
 
-        Genre library = new Genre("Library", "A collection of books and genres");
+        LibraryComponent library = new Genre("Library", "A collection of books and genres");
         library.add(novels);
         library.add(comics);
 
         Librarian librarian = new Librarian(library);
 
-        System.out.println("\nPrinting All Books");
-        librarian.printAllBooks();
-        System.out.println("**************************");
-        
+        // System.out.println("\nPrinting All Books");
+        // librarian.printAllBooks();
+        // System.out.println("**************************");
+
         System.out.println("\nAudible Books:");
         librarian.printAudable();
         System.out.println("**************************");
         
-        System.out.println("\nBooks by J.R.R. Tolkien:");
-        librarian.printBooksOfAuthor("J.R.R. Tolkien");
-    
+        // System.out.println("\nAudible Books:");
+        // librarian.printAudable();
+        // System.out.println("**************************");
+
+        System.out.println("\nBooks by Jane Austen");
+        librarian.printBooksOfAuthor("Jane Austen");
+
+        System.out.println("\nBooks by Stan Lee");
+        librarian.printBooksOfAuthor("Stan Lee");
+
+        System.out.println("\nBooks by Bob Kane");
+        librarian.printBooksOfAuthor("Bob Kane");
+
     }
 }
