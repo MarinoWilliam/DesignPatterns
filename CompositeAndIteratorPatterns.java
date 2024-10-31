@@ -290,17 +290,13 @@ public class CompositeAndIteratorPatterns {
 
         Librarian librarian = new Librarian(library);
 
-        // System.out.println("\nPrinting All Books");
-        // librarian.printAllBooks();
-        // System.out.println("**************************");
+        System.out.println("\nPrinting All Books");
+        librarian.printAllBooks();
+        System.out.println("**************************");
 
         System.out.println("\nAudible Books:");
         librarian.printAudable();
         System.out.println("**************************");
-        
-        // System.out.println("\nAudible Books:");
-        // librarian.printAudable();
-        // System.out.println("**************************");
 
         System.out.println("\nBooks by Jane Austen");
         librarian.printBooksOfAuthor("Jane Austen");
